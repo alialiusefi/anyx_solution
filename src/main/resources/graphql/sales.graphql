@@ -1,0 +1,18 @@
+type SaleCreated {
+    finalPrice: String!,
+    points: Int!
+}
+
+type AggregatedSales {
+    datetime: String!,
+    sales: String!,
+    points: String!
+}
+
+type Query {
+    getHourlySalesInRange(startDateTime: String, endDateTime: String): [AggregatedSales]!
+}
+
+type Mutation {
+    createSale(price: String!, priceModifier: Float!, paymentMethod: String!, datetime: String!): SaleCreated
+}

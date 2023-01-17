@@ -1,0 +1,19 @@
+spring:
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
+    generate-ddl: false
+    hibernate:
+      naming:
+        physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+  flyway:
+    enabled: true
+    locations: flyway
+  mvc:
+    servlet:
+      path: /v1
+management:
+  endpoints:
+    web:
+      exposure.include: 'health'
+      base-path:
+    enabled-by-default: true
