@@ -10,8 +10,9 @@ import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 @Service
 class SalesService(
@@ -34,17 +35,21 @@ class SalesService(
             priceModifier = priceModifier,
             paymentMethod = paymentMethod,
             pointMultiplier = pointService.getPointMultiplier(paymentMethod),
-            datetime = datetime
+            datetime = Timestamp.valueOf(datetime)
         )
         saleRepository.save(sale)
         val finalPrice = price.multiply(BigDecimal(priceModifier))
         return SaleCreated(
-            finalPrice = finalPrice.setScale(2, RoundingMode.DOWN).toPlainString(),
+            finalPrice = finalPrice.setScale(2, RoundingMode.DOWN).toString(),
             points = points
         )
     }
 
     fun getHourlySales(@Argument fromDateTime: LocalDateTime, @Argument toDateTime: LocalDateTime): List<AggregatedSale> {
-        return saleCustomRepository.getAggregatedSalesHourlyInRange(fromDateTime, toDateTime)
+        val aggregatedSales = saleCustomRepository.getAggregatedSalesHourlyInRange(fromDateTime, toDateTime)
+        return aggregatedSales.map {
+            val salesBigDecimal = BigDecimal(it.sales).setScale(2, RoundingMode.DOWN)
+            it.copy(sales = salesBigDecimal.toString())
+        }
     }
 }
