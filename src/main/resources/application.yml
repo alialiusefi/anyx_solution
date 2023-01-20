@@ -1,4 +1,8 @@
 spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}
+    username: ${SPRING_DATASOURCE_USERNAME:user}
+    password: ${SPRING_DATASOURCE_PASSWORD:pass}
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL95Dialect
     generate-ddl: false
@@ -8,12 +12,42 @@ spring:
   flyway:
     enabled: true
     locations: flyway
-  mvc:
-    servlet:
-      path: /v1
+  graphql:
+    graphiql:
+      enabled: true
+      path: /graphiql
 management:
   endpoints:
     web:
       exposure.include: 'health'
       base-path:
     enabled-by-default: true
+app:
+  point:
+    multiplier:
+      CASH: 0.05
+      CASH_ON_DELIVERY: 0.05
+      VISA: 0.03
+      MASTERCARD: 0.03
+      AMEX: 0.02
+      JCB: 0.05
+  discount:
+    modifier:
+      CASH:
+        fromInclusive: 0.9
+        toInclusive: 1.0
+      CASH_ON_DELIVERY:
+        fromInclusive: 1.0
+        toInclusive: 1.02
+      VISA:
+        fromInclusive: 0.95
+        toInclusive: 1.0
+      MASTERCARD:
+        fromInclusive: 0.95
+        toInclusive: 1.0
+      AMEX:
+        fromInclusive: 0.98
+        toInclusive: 1.01
+      JCB:
+        fromInclusive: 0.95
+        toInclusive: 1.0

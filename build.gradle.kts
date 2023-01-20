@@ -1,6 +1,8 @@
 plugins {
     kotlin("jvm") version "1.7.21"
     id("org.springframework.boot") version "2.7.7-SNAPSHOT"
+    id("org.jetbrains.kotlin.plugin.spring") version "1.7.21"
+    id("org.jetbrains.kotlin.plugin.jpa") version "1.7.21"
     id("io.spring.dependency-management") version "1.0.15.RELEASE"
     id("com.avast.gradle.docker-compose") version "0.16.11"
     id("org.flywaydb.flyway") version "9.8.3"

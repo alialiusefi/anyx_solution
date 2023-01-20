@@ -10,7 +10,7 @@ type AggregatedSales {
 }
 
 type Query {
-    getHourlySalesInRange(startDateTime: String, endDateTime: String): [AggregatedSales]!
+    getHourlySales(fromDateTime: String!, toDateTime: String!): [AggregatedSales]!
 }
 
 type Mutation {
