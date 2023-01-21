@@ -25,7 +25,6 @@ class CustomExceptionResolver : DataFetcherExceptionResolverAdapter() {
                 }
                 return graphQlErrors
             }
-
             is BadRequestException -> {
                 return listOf(
                     GraphqlErrorBuilder.newError()
@@ -36,7 +35,16 @@ class CustomExceptionResolver : DataFetcherExceptionResolverAdapter() {
                         .build()
                 )
             }
+            else -> {
+                return listOf(
+                    GraphqlErrorBuilder.newError()
+                        .errorType(ErrorType.INTERNAL_ERROR)
+                        .message(ex.message)
+                        .path(env.executionStepInfo.path)
+                        .location(env.field.sourceLocation)
+                        .build()
+                )
+            }
         }
-        return emptyList()
     }
 }

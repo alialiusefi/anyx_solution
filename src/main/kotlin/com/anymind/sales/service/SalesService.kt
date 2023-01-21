@@ -23,7 +23,7 @@ class SalesService(
 ) {
     companion object {
         const val SCALE = 2
-        val ROUNDING_MODE = RoundingMode.DOWN
+        val ROUNDING_MODE = RoundingMode.HALF_UP
     }
 
     fun createSale(

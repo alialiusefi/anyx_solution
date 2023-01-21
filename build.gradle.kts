@@ -35,6 +35,7 @@ dependencies {
     implementation("org.flywaydb:flyway-core:9.8.3")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("io.mockk:mockk:1.12.4")
 }
 
 application {
