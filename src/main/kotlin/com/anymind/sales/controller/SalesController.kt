@@ -3,6 +3,7 @@ package com.anymind.sales.controller
 import com.anymind.sales.dto.AggregatedSale
 import com.anymind.sales.dto.SaleCreated
 import com.anymind.sales.entity.PaymentMethod
+import com.anymind.sales.exception.BadRequestException
 import com.anymind.sales.service.SalesService
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping
@@ -10,6 +11,8 @@ import org.springframework.graphql.data.method.annotation.QueryMapping
 import org.springframework.stereotype.Controller
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.time.format.DateTimeParseException
+import javax.validation.constraints.Pattern
 
 @Controller
 class SalesController(
@@ -17,22 +20,32 @@ class SalesController(
 ) {
     @MutationMapping
     fun createSale(
-        @Argument price: String, @Argument priceModifier: Double, @Argument paymentMethod: PaymentMethod,
+        @Argument @Pattern(regexp = "^\\d*\\.?\\d*\$") price: String,
+        @Argument @Pattern(regexp = "^\\d*\\.?\\d*\$") priceModifier: Double,
+        @Argument paymentMethod: PaymentMethod,
         @Argument datetime: String
     ): SaleCreated {
         return salesService.createSale(
             price = BigDecimal(price),
             priceModifier = priceModifier,
             paymentMethod = paymentMethod,
-            datetime = LocalDateTime.parse(datetime)
+            datetime = parseDateTime(datetime)
         )
     }
 
     @QueryMapping
     fun getHourlySales(@Argument fromDateTime: String, @Argument toDateTime: String): List<AggregatedSale> {
         return salesService.getHourlySales(
-            LocalDateTime.parse(fromDateTime),
-            LocalDateTime.parse(toDateTime)
+            parseDateTime(fromDateTime),
+            parseDateTime(toDateTime)
         )
+    }
+
+    fun parseDateTime(dateTime: String): LocalDateTime {
+        return try {
+            LocalDateTime.parse(dateTime)
+        } catch (e: DateTimeParseException) {
+            throw BadRequestException("Couldn't parse datetime=$dateTime, please check the format.")
+        }
     }
 }

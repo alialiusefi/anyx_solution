@@ -21,6 +21,11 @@ class SalesService(
     private val discountService: DiscountService,
     private val pointService: PointService
 ) {
+    companion object {
+        const val SCALE = 2
+        val ROUNDING_MODE = RoundingMode.DOWN
+    }
+
     fun createSale(
         price: BigDecimal,
         priceModifier: Double,
@@ -40,15 +45,15 @@ class SalesService(
         saleRepository.save(sale)
         val finalPrice = price.multiply(BigDecimal(priceModifier))
         return SaleCreated(
-            finalPrice = finalPrice.setScale(2, RoundingMode.DOWN).toString(),
+            finalPrice = finalPrice.setScale(SCALE, ROUNDING_MODE).toString(),
             points = points
         )
     }
 
-    fun getHourlySales(@Argument fromDateTime: LocalDateTime, @Argument toDateTime: LocalDateTime): List<AggregatedSale> {
+    fun getHourlySales(fromDateTime: LocalDateTime, toDateTime: LocalDateTime): List<AggregatedSale> {
         val aggregatedSales = saleCustomRepository.getAggregatedSalesHourlyInRange(fromDateTime, toDateTime)
         return aggregatedSales.map {
-            val salesBigDecimal = BigDecimal(it.sales).setScale(2, RoundingMode.DOWN)
+            val salesBigDecimal = BigDecimal(it.sales).setScale(SCALE, ROUNDING_MODE)
             it.copy(sales = salesBigDecimal.toString())
         }
     }

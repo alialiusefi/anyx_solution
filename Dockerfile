@@ -1,7 +1,7 @@
 FROM gradle:7.6.0 AS TEMP_BUILD_IMAGE
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build bootJar -x test || return 0
+RUN gradle bootJar -x test || return 0
 
 FROM adoptopenjdk:11-jre-hotspot
 ENV ARTIFACT_NAME=test_solution-0.0.1.jar
