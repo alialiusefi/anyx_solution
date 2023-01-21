@@ -21,7 +21,7 @@ class SalesController(
     @MutationMapping
     fun createSale(
         @Argument @Pattern(regexp = "^\\d*\\.?\\d*\$") price: String,
-        @Argument @Pattern(regexp = "^\\d*\\.?\\d*\$") priceModifier: Double,
+        @Argument priceModifier: Double,
         @Argument paymentMethod: PaymentMethod,
         @Argument datetime: String
     ): SaleCreated {
