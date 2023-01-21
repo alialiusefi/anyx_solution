@@ -6,7 +6,3 @@ spring:
     password: pass
   flyway:
     locations: filesystem:src/main/resources/flyway
-app:
-  s3:
-    bucket-name: files-bucket
-    url: localhost:4566
