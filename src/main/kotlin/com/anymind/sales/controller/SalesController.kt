@@ -22,13 +22,16 @@ class SalesController(
     fun createSale(
         @Argument @Pattern(regexp = "^\\d*\\.?\\d*\$") price: String,
         @Argument priceModifier: Double,
-        @Argument paymentMethod: PaymentMethod,
+        @Argument paymentMethod: String,
         @Argument datetime: String
     ): SaleCreated {
+        val paymentMethodEnum = PaymentMethod.values().find { it.name == paymentMethod } ?: throw BadRequestException(
+            "PaymentMethod=$paymentMethod is not supported!"
+        )
         return salesService.createSale(
             price = BigDecimal(price),
             priceModifier = priceModifier,
-            paymentMethod = paymentMethod,
+            paymentMethod = paymentMethodEnum,
             datetime = parseDateTime(datetime)
         )
     }
