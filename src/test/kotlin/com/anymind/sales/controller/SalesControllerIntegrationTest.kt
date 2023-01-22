@@ -14,17 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.graphql.ResponseError
+import org.springframework.graphql.execution.ErrorType
 import org.springframework.graphql.test.tester.HttpGraphQlTester
 import java.math.BigDecimal
 import java.sql.Timestamp
-import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.*
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = ["server.port=8080"])
 @AutoConfigureHttpGraphQlTester
 @EnableConfigurationProperties(value = [PointMultiplierConfiguration::class, ValidDiscountIntervalConfiguration::class])
-class SalesControllerTest(
+class SalesControllerIntegrationTest(
     @Autowired val salesRepository: SaleRepository,
     @Autowired val graphQlTester: HttpGraphQlTester
 ) {
@@ -63,22 +64,34 @@ class SalesControllerTest(
     }
 
     @Test
+    fun shouldReturnBadRequestErrorMessageWhenPriceModifierIsOutOfRange() {
+        graphQlTester.documentName("createSale")
+            .variable("price", "100")
+            .variable("priceModifier", 101.00f)
+            .variable("paymentMethod", "CASH")
+            .variable("datetime", LocalDateTime.now().toString())
+            .execute()
+            .errors().expect {
+                it.extensions["classification"] == "BAD_REQUEST"
+            }.expect {
+                it.path == "createSale"
+            }.expect {
+                it.message == "priceModifier=101.0 doesnt fit paymentMethod=CASH requirements!"
+            }
+    }
+
+    @Test
     fun shouldReturnListOfAggregatedSalesWhenQueryArgumentsAreValid() {
         val listOfSales = listOfSales()
         salesRepository.saveAll(listOfSales)
 
         graphQlTester.documentName("getHourlySales")
-            .variable("fromDateTime", LocalDateTime.of(2019, 1, 14,3, 0).toString())
-            .variable("toDateTime", LocalDateTime.of(2023, 1, 14,3, 0).toString())
+            .variable("fromDateTime", LocalDateTime.of(2019, 1, 14, 3, 0).toString())
+            .variable("toDateTime", LocalDateTime.of(2023, 1, 14, 3, 0).toString())
             .execute()
             .path("getHourlySales")
             .entityList(AggregatedSale::class.java)
             .contains(*expectedListOfAggregatedSales().toTypedArray())
-    }
-
-    @Test
-    fun shouldReturnValidErrorMessagesWhenArgumentsAreInvalid() {
-
     }
 
     fun listOfSales(): List<Sale> = listOf(
@@ -87,7 +100,7 @@ class SalesControllerTest(
             price = BigDecimal(100),
             priceModifier = 0.95,
             paymentMethod = PaymentMethod.CASH,
-            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 1, 15,4, 15)),
+            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 1, 15, 4, 15)),
             pointMultiplier = 0.05
         ),
         Sale(
@@ -95,7 +108,7 @@ class SalesControllerTest(
             price = BigDecimal(100),
             priceModifier = 0.95,
             paymentMethod = PaymentMethod.CASH,
-            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 1, 15,4, 15)),
+            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 1, 15, 4, 15)),
             pointMultiplier = 0.05
         ),
         Sale(
@@ -103,7 +116,7 @@ class SalesControllerTest(
             price = BigDecimal(100),
             priceModifier = 0.95,
             paymentMethod = PaymentMethod.CASH,
-            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 1, 15,3, 15)),
+            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 1, 15, 3, 15)),
             pointMultiplier = 0.05
         ),
         Sale(
@@ -111,7 +124,7 @@ class SalesControllerTest(
             price = BigDecimal(100),
             priceModifier = 0.95,
             paymentMethod = PaymentMethod.CASH,
-            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 1, 14,3, 15)),
+            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 1, 14, 3, 15)),
             pointMultiplier = 0.05
         ),
         Sale(
@@ -119,7 +132,7 @@ class SalesControllerTest(
             price = BigDecimal(100),
             priceModifier = 0.95,
             paymentMethod = PaymentMethod.CASH,
-            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 2, 15,3, 15)),
+            datetime = Timestamp.valueOf(LocalDateTime.of(2022, 2, 15, 3, 15)),
             pointMultiplier = 0.05
         ),
         Sale(
@@ -127,7 +140,7 @@ class SalesControllerTest(
             price = BigDecimal(100),
             priceModifier = 0.95,
             paymentMethod = PaymentMethod.CASH,
-            datetime = Timestamp.valueOf(LocalDateTime.of(2021, 1, 15,3, 15)),
+            datetime = Timestamp.valueOf(LocalDateTime.of(2021, 1, 15, 3, 15)),
             pointMultiplier = 0.05
         )
     )
@@ -136,27 +149,27 @@ class SalesControllerTest(
         AggregatedSale(
             sales = "190.00",
             points = 10L,
-            datetime = LocalDateTime.of(2022, 1, 15,4, 0)
+            datetime = LocalDateTime.of(2022, 1, 15, 4, 0)
         ),
         AggregatedSale(
             sales = "95.00",
             points = 5L,
-            datetime = LocalDateTime.of(2022, 1, 15,3, 0)
+            datetime = LocalDateTime.of(2022, 1, 15, 3, 0)
         ),
         AggregatedSale(
             sales = "95.00",
             points = 5L,
-            datetime = LocalDateTime.of(2022, 1, 14,3, 0)
+            datetime = LocalDateTime.of(2022, 1, 14, 3, 0)
         ),
         AggregatedSale(
             sales = "95.00",
             points = 5L,
-            datetime = LocalDateTime.of(2022, 2, 15,3, 0)
+            datetime = LocalDateTime.of(2022, 2, 15, 3, 0)
         ),
         AggregatedSale(
             sales = "95.00",
             points = 5L,
-            datetime = LocalDateTime.of(2021, 1, 15,3, 0)
+            datetime = LocalDateTime.of(2021, 1, 15, 3, 0)
         )
     )
 }
