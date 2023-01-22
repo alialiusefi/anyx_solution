@@ -1,8 +1,0 @@
-spring:
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: user
-    password: pass
-  flyway:
-    locations: filesystem:src/main/resources/flyway

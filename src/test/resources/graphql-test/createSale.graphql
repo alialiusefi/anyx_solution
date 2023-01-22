@@ -1,0 +1,6 @@
+mutation createSale($price: String!, $priceModifier: Float!, $paymentMethod: String!, $datetime: String!) {
+    createSale(price: $price, priceModifier: $priceModifier, paymentMethod: $paymentMethod, datetime: $datetime) {
+        finalPrice
+        points
+    }
+}

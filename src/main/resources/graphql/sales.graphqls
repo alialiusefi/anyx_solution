@@ -1,8 +1,3 @@
-type SaleCreated {
-    finalPrice: String!,
-    points: Int!
-}
-
 type AggregatedSales {
     datetime: String!,
     sales: String!,
@@ -15,4 +10,9 @@ type Query {
 
 type Mutation {
     createSale(price: String!, priceModifier: Float!, paymentMethod: String!, datetime: String!): SaleCreated
+}
+
+type SaleCreated {
+    finalPrice: String!,
+    points: Int!
 }

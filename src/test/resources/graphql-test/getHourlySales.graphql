@@ -1,0 +1,7 @@
+query getHourlySales($fromDateTime: String!, $toDateTime: String!) {
+    getHourlySales(fromDateTime: $fromDateTime, toDateTime: $toDateTime) {
+        points
+        datetime
+        sales
+    }
+}
