@@ -46,6 +46,7 @@ application {
 
 dockerCompose {
     isRequiredBy(tasks.test)
+    isRequiredBy(tasks.bootRun)
     startedServices.set(listOf("db"))
 }
 

@@ -162,7 +162,8 @@ class SalesControllerIntegrationTest(
                                 responseError.path == "createSale" &&
                                 responseError.message?.contains(
                                     "PaymentMethod=newpaymentmethod is" +
-                                            " not supported! Supported paymentMethods="
+                                            " not supported! Supported paymentMethods=CASH, CASH_ON_DELIVERY, " +
+                                            "VISA, MASTERCARD, AMEX, JCB"
                                 ) ?: false
                     }
                 ),

@@ -26,7 +26,7 @@ class SalesController(
         @Argument datetime: String
     ): SaleCreated {
         val paymentMethodEnum = PaymentMethod.values().find { it.name == paymentMethod } ?: throw BadRequestException(
-            "PaymentMethod=$paymentMethod is not supported! Supported paymentMethods=${PaymentMethod.values()}"
+            "PaymentMethod=$paymentMethod is not supported! Supported paymentMethods=${PaymentMethod.values().joinToString()}"
         )
         return salesService.createSale(
             price = BigDecimal(price),
