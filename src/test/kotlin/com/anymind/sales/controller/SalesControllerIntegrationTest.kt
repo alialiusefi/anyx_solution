@@ -119,7 +119,7 @@ class SalesControllerIntegrationTest(
             }.expect {
                 it.path == "createSale"
             }.expect {
-                it.message == "priceModifier=101.0 doesnt fit paymentMethod=CASH requirements!"
+                it.message == expectedErrorMessage
             }
     }
 
