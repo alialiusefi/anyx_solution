@@ -13,7 +13,7 @@ class DiscountServiceTest {
             modifier = buildMap {
                 put(
                     PaymentMethod.CASH,
-                    DiscountService.ValidDiscountIntervalConfig(0.5, 0.9)
+                    ValidDiscountIntervalConfiguration.IntervalConfig(0.5, 0.9)
                 )
             }
         )
@@ -40,7 +40,7 @@ class DiscountServiceTest {
             modifier = buildMap {
                 put(
                     PaymentMethod.CASH,
-                    DiscountService.ValidDiscountIntervalConfig(0.5, 0.9)
+                    ValidDiscountIntervalConfiguration.IntervalConfig(0.5, 0.9)
                 )
             }
         )

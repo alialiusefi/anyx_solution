@@ -11,6 +11,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -79,18 +80,24 @@ class SaleServiceTest {
 
         assertEquals(expectedSaleCreated, actualSaleCreated)
         assertEquals(expectedSale, saleSlot.captured)
+        verify {
+            mockkDiscountService.validatePriceModifierForPaymentMethod(priceModifier, paymentMethod)
+            mockPointService.calculatePoints(price, paymentMethod)
+            mockSalesRepository.save(expectedSale)
+        }
     }
 
     @Test
     fun shouldReturnAggregatedSaleListWhenPassingValidArguments() {
+        val datetime = LocalDateTime.now()
         val aggregatedSales = listOf(
             AggregatedSale(
-                LocalDateTime.now(),
+                datetime,
                 "123.123123",
                 2L
             ),
             AggregatedSale(
-                LocalDateTime.now(),
+                datetime,
                 "456.55555",
                 2L
             )
@@ -98,22 +105,24 @@ class SaleServiceTest {
         every { mockSaleCustomRepository.getAggregatedSalesHourlyInRange(any(), any()) } returns aggregatedSales
 
         val actualListOfAggregatedSale = saleService.getHourlySales(
-            LocalDateTime.now().minusHours(1L), LocalDateTime.now().plusHours(1L)
+            datetime.minusHours(1L), datetime.plusHours(1L)
         )
 
         val expectedAggregatedSales = listOf(
             AggregatedSale(
-                LocalDateTime.now(),
+                datetime,
                 "123.12",
                 2L
             ),
             AggregatedSale(
-                LocalDateTime.now(),
+                datetime,
                 "456.56",
                 2L
             )
         )
-        assertThat(expectedAggregatedSales).usingRecursiveFieldByFieldElementComparatorIgnoringFields("datetime")
-            .isEqualTo(actualListOfAggregatedSale)
+        assertThat(expectedAggregatedSales).isEqualTo(actualListOfAggregatedSale)
+        verify {
+            mockSaleCustomRepository.getAggregatedSalesHourlyInRange(datetime.minusHours(1L), datetime.plusHours(1L))
+        }
     }
 }

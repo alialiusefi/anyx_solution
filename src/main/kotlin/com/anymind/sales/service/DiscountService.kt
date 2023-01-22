@@ -16,9 +16,4 @@ class DiscountService(
             throw BadRequestException("priceModifier=$priceModifier doesnt fit paymentMethod=$paymentMethod requirements!")
         }
     }
-
-    data class ValidDiscountIntervalConfig(
-        val fromInclusive: Double,
-        val toInclusive: Double
-    )
 }
