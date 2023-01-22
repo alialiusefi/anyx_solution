@@ -1,17 +1,27 @@
+"""
+    An element of an array that represents the sum of sales and points per hour.
+"""
 type AggregatedSales {
     datetime: String!,
     sales: String!,
     points: String!
 }
-
+"""
+    This query retrieves list of aggregated hourly sales that fit in the provided range arguments.
+"""
 type Query {
     getHourlySales(fromDateTime: String!, toDateTime: String!): [AggregatedSales]!
 }
-
+"""
+    This mutation creates a sale with the provided arguments and saves it. Returns the calculated discounted price and points.
+"""
 type Mutation {
     createSale(price: String!, priceModifier: Float!, paymentMethod: String!, datetime: String!): SaleCreated
 }
 
+"""
+    The discount price with calculated points of a created sale.
+"""
 type SaleCreated {
     finalPrice: String!,
     points: Int!
