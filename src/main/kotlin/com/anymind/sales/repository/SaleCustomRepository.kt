@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
 @Repository
-open class SaleCustomRepository(
+class SaleCustomRepository(
     private val jdbcTemplate: JdbcTemplate
 ) {
     fun getAggregatedSalesHourlyInRange(from: LocalDateTime, to: LocalDateTime): List<AggregatedSale> {

@@ -44,7 +44,7 @@ class SalesController(
         )
     }
 
-    fun parseDateTime(dateTime: String): LocalDateTime {
+    private fun parseDateTime(dateTime: String): LocalDateTime {
         return try {
             LocalDateTime.parse(dateTime)
         } catch (e: DateTimeParseException) {
