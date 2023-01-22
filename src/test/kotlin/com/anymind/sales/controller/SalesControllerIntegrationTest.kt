@@ -117,7 +117,7 @@ class SalesControllerIntegrationTest(
             .errors().expect {
                 it.extensions["classification"] == "BAD_REQUEST"
             }.expect {
-                it.path == "createSale"
+                it.path == "getHourlySales"
             }.expect {
                 it.message == expectedErrorMessage
             }
