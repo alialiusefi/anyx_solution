@@ -18,17 +18,19 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 class SaleServiceTest {
 
-    private val mockSalesRepository : SaleRepository = mockk()
+    private val mockSalesRepository: SaleRepository = mockk()
     private val mockSaleCustomRepository: SaleCustomRepository = mockk()
     private val mockkDiscountService: DiscountService = mockk()
     private val mockPointService: PointService = mockk()
-    private val saleService = SalesService(mockSalesRepository, mockSaleCustomRepository, mockkDiscountService,
+    private val saleService = SalesService(
+        mockSalesRepository, mockSaleCustomRepository, mockkDiscountService,
         mockPointService
     )
+
     @BeforeEach
     fun beforeEach() {
         clearMocks(
@@ -38,6 +40,7 @@ class SaleServiceTest {
             mockkDiscountService
         )
     }
+
     @Test
     fun shouldReturnSaleCreatedWhenPassingValidPriceAndPaymentMethod() {
         val points = 3L

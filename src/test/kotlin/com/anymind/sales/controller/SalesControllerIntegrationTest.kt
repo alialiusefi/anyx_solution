@@ -10,17 +10,20 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.autoconfigure.graphql.tester.AutoConfigureHttpGraphQlTester
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.graphql.ResponseError
-import org.springframework.graphql.execution.ErrorType
 import org.springframework.graphql.test.tester.HttpGraphQlTester
 import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.util.*
+import java.util.stream.Stream
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT, properties = ["server.port=8080"])
 @AutoConfigureHttpGraphQlTester
@@ -80,6 +83,46 @@ class SalesControllerIntegrationTest(
             }
     }
 
+    @ParameterizedTest
+    @MethodSource("createSaleInvalidArguments")
+    fun shouldReturnBadRequestErrorMessageWhenInvalidCreateSaleArguments(
+        price: String,
+        priceModifier: Double,
+        paymentMethod: String,
+        datetime: String,
+        expectations: (responseError: ResponseError) -> Boolean
+    ) {
+        graphQlTester.documentName("createSale")
+            .variable("price", price)
+            .variable("priceModifier", priceModifier)
+            .variable("paymentMethod", paymentMethod)
+            .variable("datetime", datetime)
+            .execute()
+            .errors().expect {
+                expectations.invoke(it)
+            }
+    }
+
+    @ParameterizedTest
+    @MethodSource("getHourlySalesInvalidArguments")
+    fun shouldReturnBadRequestErrorMessageWhenInvalidGetHourlySalesArguments(
+        fromDateTime: String,
+        toDateTime: String,
+        expectedErrorMessage: String
+    ) {
+        graphQlTester.documentName("getHourlySales")
+            .variable("fromDateTime", fromDateTime)
+            .variable("toDateTime", toDateTime)
+            .execute()
+            .errors().expect {
+                it.extensions["classification"] == "BAD_REQUEST"
+            }.expect {
+                it.path == "createSale"
+            }.expect {
+                it.message == "priceModifier=101.0 doesnt fit paymentMethod=CASH requirements!"
+            }
+    }
+
     @Test
     fun shouldReturnListOfAggregatedSalesWhenQueryArgumentsAreValid() {
         val listOfSales = listOfSales()
@@ -92,6 +135,69 @@ class SalesControllerIntegrationTest(
             .path("getHourlySales")
             .entityList(AggregatedSale::class.java)
             .contains(*expectedListOfAggregatedSales().toTypedArray())
+    }
+
+    companion object {
+        @JvmStatic
+        fun createSaleInvalidArguments(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    "abcd",
+                    "0.95",
+                    "JCB",
+                    LocalDateTime.now().toString(),
+                    { responseError: ResponseError ->
+                        return@of responseError.extensions["classification"] == "BAD_REQUEST" &&
+                                responseError.path == "createSale" &&
+                                responseError.message?.contains("must match") ?: false
+                    }
+                ),
+                Arguments.of(
+                    "100.00",
+                    "0.95",
+                    "newpaymentmethod",
+                    LocalDateTime.now().toString(),
+                    { responseError: ResponseError ->
+                        return@of responseError.extensions["classification"] == "BAD_REQUEST" &&
+                                responseError.path == "createSale" &&
+                                responseError.message?.contains(
+                                    "PaymentMethod=newpaymentmethod is" +
+                                            " not supported! Supported paymentMethods="
+                                ) ?: false
+                    }
+                ),
+                Arguments.of(
+                    "100.00",
+                    "0.95",
+                    "JCB",
+                    "abcd",
+                    { responseError: ResponseError ->
+                        return@of responseError.extensions["classification"] == "BAD_REQUEST" &&
+                                responseError.path == "createSale" &&
+                                responseError.message?.contains(
+                                    "Couldn't parse datetime=abcd, " +
+                                            "please check the format."
+                                ) ?: false
+                    }
+                )
+            )
+        }
+
+        @JvmStatic
+        fun getHourlySalesInvalidArguments(): Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(
+                    "",
+                    "",
+                    "Couldn't parse datetime=, please check the format."
+                ),
+                Arguments.of(
+                    "abcd",
+                    "",
+                    "Couldn't parse datetime=abcd, please check the format."
+                ),
+            )
+        }
     }
 
     fun listOfSales(): List<Sale> = listOf(
