@@ -28,10 +28,9 @@ docker-compose up
 Note: The reason why it is slow is due to the building image process and gradle daemon starting up the first time. Although having gradle,java installed and ports free are not required.
 
 ## Usage
-There is a gui available to test the functionality of the project. All data created is temporary due to the volume of postgres database is in-memory.
+There is a gui available to test the functionality of the project. All data created is temporary due to the volume of postgres database is in-memory. Another way is to use the postman collection provided with ready body and arguments to test.
 ```http
 http://localhost:8080/graphiql?path=/graphql
-
 ```
 ## Tests
 To run tests, please run test gradle task.
