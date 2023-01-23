@@ -4,6 +4,7 @@ import com.anymind.sales.exception.BadRequestException
 import graphql.GraphQLError
 import graphql.GraphqlErrorBuilder
 import graphql.schema.DataFetchingEnvironment
+import mu.KLogging
 import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter
 import org.springframework.graphql.execution.ErrorType
 import org.springframework.stereotype.Component
@@ -12,6 +13,9 @@ import javax.validation.ConstraintViolationException
 
 @Component
 class CustomExceptionResolver : DataFetcherExceptionResolverAdapter() {
+
+    companion object : KLogging()
+
     override fun resolveToMultipleErrors(ex: Throwable, env: DataFetchingEnvironment): List<GraphQLError> {
         when (ex) {
             is ConstraintViolationException -> {
@@ -25,6 +29,7 @@ class CustomExceptionResolver : DataFetcherExceptionResolverAdapter() {
                 }
                 return graphQlErrors
             }
+
             is BadRequestException -> {
                 return listOf(
                     GraphqlErrorBuilder.newError()
@@ -35,7 +40,9 @@ class CustomExceptionResolver : DataFetcherExceptionResolverAdapter() {
                         .build()
                 )
             }
+
             else -> {
+                logger.error(ex) { ex.message }
                 return listOf(
                     GraphqlErrorBuilder.newError()
                         .errorType(ErrorType.INTERNAL_ERROR)

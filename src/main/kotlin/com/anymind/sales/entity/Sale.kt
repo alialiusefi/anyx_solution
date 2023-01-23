@@ -1,12 +1,8 @@
 package com.anymind.sales.entity
 
-import org.hibernate.annotations.Type
 import java.math.BigDecimal
 import java.sql.Timestamp
-import java.time.LocalDateTime
-import java.util.UUID
-import javax.persistence.AttributeConverter
-import javax.persistence.Convert
+import java.util.*
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated

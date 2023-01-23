@@ -1,3 +1,6 @@
+logging:
+  level:
+    com.anymind.sales.config: DEBUG
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/postgres}

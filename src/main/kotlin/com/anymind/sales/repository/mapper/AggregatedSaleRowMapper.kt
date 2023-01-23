@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.RowMapper
 import java.sql.ResultSet
 import java.sql.Timestamp
 
-class AggregatedSaleRowMapper: RowMapper<AggregatedSale> {
+class AggregatedSaleRowMapper : RowMapper<AggregatedSale> {
     override fun mapRow(rs: ResultSet, rowNum: Int): AggregatedSale {
         return AggregatedSale(
             points = rs.getLong("points"),

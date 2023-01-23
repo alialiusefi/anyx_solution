@@ -6,7 +6,6 @@ import com.anymind.sales.entity.PaymentMethod
 import com.anymind.sales.entity.Sale
 import com.anymind.sales.repository.SaleCustomRepository
 import com.anymind.sales.repository.SaleRepository
-import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode

@@ -30,6 +30,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.4")
 
     implementation("org.postgresql:postgresql:42.4.3")
     implementation("org.flywaydb:flyway-core:9.8.3")

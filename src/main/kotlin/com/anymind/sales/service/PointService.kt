@@ -2,12 +2,8 @@ package com.anymind.sales.service
 
 import com.anymind.sales.config.PointMultiplierConfiguration
 import com.anymind.sales.entity.PaymentMethod
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import java.lang.Math.floor
-import java.lang.Math.multiplyExact
 import java.math.BigDecimal
-import java.util.*
 
 @Service
 class PointService(
